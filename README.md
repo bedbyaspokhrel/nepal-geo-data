@@ -110,7 +110,7 @@ fig.show()
 
 To install locally for development:
 ```bash
-git clone https://github.com/yourusername/nepal-geo-data.git
+git clone https://github.com/bedbyaspokhrel/nepal-geo-data.git
 cd nepal-geo-data
 pip install -e .
 ```

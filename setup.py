@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="nepal-geo-data",
-    version="0.1.0",
+    version="0.1.1",
     author="Your Name",
     author_email="your.email@example.com",
     description="A Python package providing geographical data for Nepal",
