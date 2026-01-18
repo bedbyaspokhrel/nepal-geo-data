@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nepal-geo-data"
-version = "0.2.0"
+version = "0.2.1"
 description = "Comprehensive Python package offering Nepal's geographical data including GeoJSON for all 77 districts and 7 provinces. Ideal for GIS, mapping, and data visualization projects for Nepal."
 readme = "README.md"
 authors = [

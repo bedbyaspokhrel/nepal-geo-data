@@ -11,7 +11,7 @@ from .core import (
     get_boundaries
 )
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __all__ = [
     "get_geojson",
     "get_provinces_geojson",
