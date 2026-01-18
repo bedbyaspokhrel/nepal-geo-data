@@ -8,7 +8,7 @@ version = "0.1.3"
 description = "Comprehensive Python package offering Nepal's geographical data including GeoJSON for all 77 districts and 7 provinces. Ideal for GIS, mapping, and data visualization projects for Nepal."
 readme = "README.md"
 authors = [
-    {name = "Your Name", email = "your.email@example.com"},
+    {name = "Bedbyas Pokhrel", email = "bedbyaspokhrel@gmail.com"},
 ]
 license = {text = "MIT"}
 keywords = ["nepal", "geojson", "gis", "nepal-map", "districts", "provinces", "nepal-geography", "kathmandu", "data-visualization", "python-nepal"]

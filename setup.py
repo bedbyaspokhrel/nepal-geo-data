@@ -6,8 +6,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setuptools.setup(
     name="nepal-geo-data",
     version="0.1.3",
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Bedbyas Pokhrel",
+    author_email="bedbyaspokhrel@gmail.com",
     description="Comprehensive Python package offering Nepal's geographical data including GeoJSON for all 77 districts and 7 provinces.",
     long_description=long_description,
     long_description_content_type="text/markdown",
