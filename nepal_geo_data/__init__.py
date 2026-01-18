@@ -13,7 +13,7 @@ from .core import (
     help
 )
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 __all__ = [
     "get_geojson",
     "get_provinces_geojson",

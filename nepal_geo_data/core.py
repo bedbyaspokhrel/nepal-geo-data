@@ -25,23 +25,35 @@ def _get_districts_data() -> Dict[str, Any]:
     global _DISTRICTS_DATA
     if _DISTRICTS_DATA is None:
         _DISTRICTS_DATA = _load_json('districts.geojson')
-        # Backward compatibility: Inject DISTRICT key
         for feature in _DISTRICTS_DATA['features']:
             props = feature['properties']
-            if 'district_name_en' in props:
+            
+            # Map new file 'DISTRICT' -> 'district_name_en' (Title Case for backward compat)
+            if 'DISTRICT' in props and 'district_name_en' not in props:
+                props['district_name_en'] = props['DISTRICT'].title()
+            
+            # Map 'DISTRICT' (legacy) if missing (e.g. if loaded from old source)
+            # The new source has 'DISTRICT' natively, so this safety check remains.
+            if 'district_name_en' in props and 'DISTRICT' not in props:
                 props['DISTRICT'] = props['district_name_en'].upper()
-            if 'province_code' in props:
-                try:
-                    # Map new string "1" to integer 1 if possible
-                    props['PROVINCE'] = int(props['province_code'])
-                except (ValueError, TypeError):
-                    props['PROVINCE'] = 0 # Default or error code
+            
+            # Map 'PROVINCE' (int) -> 'province_code' (if needed)
+            if 'PROVINCE' in props:
+                props['province_code'] = props['PROVINCE']
+
     return _DISTRICTS_DATA
 
 def _get_provinces_data() -> Dict[str, Any]:
     global _PROVINCES_DATA
     if _PROVINCES_DATA is None:
         _PROVINCES_DATA = _load_json('provinces.geojson')
+        # Inject standard keys from new file ('name', 'id')
+        for feature in _PROVINCES_DATA['features']:
+            props = feature['properties']
+            if 'name' in props:
+                props['province_name_en'] = props['name']
+            if 'id' in props:
+                props['province_code'] = props['id']
     return _PROVINCES_DATA
 
 def _get_municipalities_data() -> Dict[str, Any]:
