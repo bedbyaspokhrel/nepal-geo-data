@@ -5,15 +5,15 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="nepal-geo-data",
-    version="0.1.1",
+    version="0.1.2",
     author="Your Name",
     author_email="your.email@example.com",
     description="A Python package providing geographical data for Nepal",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/nepal-geo-data",
+    url="https://github.com/bedbyaspokhrel/nepal-geo-data",
     project_urls={
-        "Bug Tracker": "https://github.com/yourusername/nepal-geo-data/issues",
+        "Bug Tracker": "https://github.com/bedbyaspokhrel/nepal-geo-data/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",

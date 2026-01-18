@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nepal-geo-data"
-version = "0.1.1"
+version = "0.1.2"
 description = "A Python package providing geographical data (GeoJSON) for Nepal's districts and provinces."
 readme = "README.md"
 authors = [
@@ -21,8 +21,8 @@ requires-python = ">=3.8"
 dependencies = []
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/nepal-geo-data"
-"Bug Tracker" = "https://github.com/yourusername/nepal-geo-data/issues"
+"Homepage" = "https://github.com/bedbyaspokhrel/nepal-geo-data"
+"Bug Tracker" = "https://github.com/bedbyaspokhrel/nepal-geo-data/issues"
 
 [tool.setuptools]
 packages = ["nepal_geo_data"]
