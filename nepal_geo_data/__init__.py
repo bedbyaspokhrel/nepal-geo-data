@@ -8,10 +8,11 @@ from .core import (
     get_district,
     get_municipality,
     get_province_districts,
-    get_boundaries
+    get_boundaries,
+    help
 )
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 __all__ = [
     "get_geojson",
     "get_provinces_geojson",
@@ -22,5 +23,6 @@ __all__ = [
     "get_district",
     "get_municipality",
     "get_province_districts",
-    "get_boundaries"
+    "get_boundaries",
+    "help"
 ]

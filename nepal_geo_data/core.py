@@ -167,6 +167,52 @@ def get_municipality(name: str) -> Optional[Dict[str, Any]]:
         if feature['properties'].get('gapa_napa', '').upper() == name_upper:
             return feature
         # Also check key maybe?
-        if feature['properties'].get('key', '').upper() == name_upper:
-            return feature
     return None
+
+def help() -> None:
+    """
+    Prints a guide on how to use the nepal-geo-data package.
+    """
+    guide = """
+    🇳🇵 Nepal Geo Data Package Guide
+    ===============================
+    
+    Available Functions:
+    --------------------
+    
+    1. Administrative Lists
+       - get_districts() -> List[str]
+         Returns a list of all 77 districts (e.g., ['ACHHAM', ...]).
+         
+       - get_municipalities(district_name=None) -> List[str]
+         Returns a list of all 753 municipalities. 
+         Optional: Pass a district name to filter (e.g., get_municipalities('Jhapa')).
+         
+       - get_provinces() -> List[Dict]
+         Returns a list of metadata for all 7 provinces.
+         
+       - get_province_districts(province_id) -> List[str]
+         Returns districts in a specific province (IDs: 1-7).
+         
+    2. Detailed Data (GeoJSON Features)
+       - get_district(name) -> Dict
+         Get metadata and geometry for a district (e.g., get_district('Kathmandu')).
+         
+       - get_municipality(name) -> Dict
+         Get metadata and geometry for a municipality (e.g., get_municipality('Kathmandu Metropolitan City')).
+         
+    3. Raw GeoJSON
+       - get_geojson() -> Dict (All Districts)
+       - get_provinces_geojson() -> Dict (All Provinces)
+       - get_municipalities_geojson() -> Dict (All Municipalities)
+       
+    Example Usage:
+    --------------
+    >>> import nepal_geo_data
+    >>> nepal_geo_data.get_districts()
+    >>> nepal_geo_data.get_municipalities('Kathmandu')
+    >>> nepal_geo_data.get_district('Lalitpur')
+    
+    For more info, visit: https://github.com/bedbyaspokhrel/nepal-geo-data
+    """
+    print(guide)

@@ -35,6 +35,9 @@ Get lists and details of administrative boundaries.
 ```python
 import nepal_geo_data
 
+# Print the built-in guide
+nepal_geo_data.help()
+
 # Get all district names
 districts = nepal_geo_data.get_districts()
 print(districts) 
