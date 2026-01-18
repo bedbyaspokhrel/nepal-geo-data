@@ -5,16 +5,17 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="nepal-geo-data",
-    version="0.1.2",
+    version="0.1.3",
     author="Your Name",
     author_email="your.email@example.com",
-    description="A Python package providing geographical data for Nepal",
+    description="Comprehensive Python package offering Nepal's geographical data including GeoJSON for all 77 districts and 7 provinces.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/bedbyaspokhrel/nepal-geo-data",
     project_urls={
         "Bug Tracker": "https://github.com/bedbyaspokhrel/nepal-geo-data/issues",
     },
+    keywords="nepal geojson gis nepal-map districts provinces nepal-geography kathmandu data-visualization python-nepal",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
