@@ -16,6 +16,7 @@ Whether you are building a dashboard in **Streamlit**, analyzing spatial data wi
 *   **Rich Metadata**: Includes English names, Nepali names (e.g., "Kathmandu", "काठमाडौँ"), and official government codes.
 *   **Zero Dependencies**: Works with standard Python libraries.
 *   **GIS Ready**: Outputs standard FeatureCollections compatible with GeoPandas (`gpd.read_file`), Folium, and Plotly.
+*   **Coordinate Reference System (CRS)**: WGS84 (EPSG:4326). All coordinates are in Latitude/Longitude.
 *   **Backward Compatible**: Preserves legacy behavior (UPPERCASE district keys) for existing projects.
 
 ## Installation
@@ -131,37 +132,188 @@ fig = px.choropleth_mapbox(
 fig.show()
 ```
 
-## API Reference
+## 📚 API Reference & Examples
 
-### `get_districts()`
-Returns a sorted list of all 77 district names (UPPERCASE).
+Here is a complete list of all available functions with examples.
 
-### `get_district(name)`
-Returns the GeoJSON feature for a district.
-*   `name`: Name of the district (case-insensitive).
-*   **Returns**: Dictionary with `type`, `properties`, and `geometry`.
+### 1. Administrative Lists
 
-### `get_province_districts(province_id)`
-Returns a list of district names in a specific province.
-*   `province_id`: Integer ID of the province (1-7).
+#### `get_districts()`
+Returns a list of all 77 districts in Nepal.
+```python
+import nepal_geo_data
+districts = nepal_geo_data.get_districts()
+print(districts[:5]) 
+# output: ['ACHHAM', 'ARGHAKHANCHI', 'BAGLUNG', 'BAITADI', 'BAJHANG']
+```
 
-### `get_municipalities(district_name=None)`
-Returns a list of municipality names.
-*   `district_name` (Optional): If provided, filters the list to return only municipalities within that district.
-*   **Returns**: Sorted list of strings.
+#### `get_provinces()`
+Returns a list of metadata for all 7 provinces.
+```python
+provinces = nepal_geo_data.get_provinces()
+for p in provinces:
+    print(f"{p['province_name_en']} (ID: {p['province_code']})")
+```
 
-### `get_wards(municipality_name)`
-Returns a list of ward numbers (integers) for a specific municipality.
-*   `municipality_name`: Name of the municipality (case-insensitive).
-*   **Returns**: List of integers (e.g., `[1, 2, 3]`).
+#### `get_province_districts(province_id)`
+Returns a list of districts within a specific province (IDs 1-7).
+```python
+# Get districts in Karnali Province (ID: 6)
+karnali = nepal_geo_data.get_province_districts(6)
+print(karnali)
+```
 
-### `get_municipality(name)`
-Returns the GeoJSON feature for a specific municipality.
-*   `name`: Name of the municipality (English, case-insensitive).
-*   **Returns**: Dictionary with geometry and rich metadata (Wards, Website, Area).
+#### `get_municipalities(district_name=None)`
+Returns a list of all 753 municipalities. Optionally filter by district.
+```python
+# All municipalities
+all_munis = nepal_geo_data.get_municipalities()
 
-### `get_geojson()` / `get_provinces_geojson()` / `get_municipalities_geojson()`
-Returns the complete raw GeoJSON FeatureCollection for Districts, Provinces, or Municipalities respectively.
+# Filter by district (e.g., Chitwan)
+chitwan_munis = nepal_geo_data.get_municipalities("Chitwan")
+print(chitwan_munis)
+```
+
+#### `get_wards(municipality_name)`
+Returns a list of ward numbers for a specific municipality.
+```python
+wards = nepal_geo_data.get_wards("Kathmandu Metropolitan City")
+print(f"Total Wards: {len(wards)}") # 32
+print(wards) # [1, 2, 3, ..., 32]
+```
+
+### 2. Search & Details (Rich Metadata)
+
+#### `get_district(name)`
+Get full details including geometry, headquarters, and codes.
+```python
+data = nepal_geo_data.get_district("Kaski")
+props = data['properties']
+print(f"District: {props['district_name_en']}")
+print(f"Headquarter: {props['headquarter']}")
+print(f"Area: {props['area_sq_km']} sq km")
+```
+
+#### `get_municipality(name)`
+Get full details including wards, website, and geometry.
+```python
+muni = nepal_geo_data.get_municipality("Pokhara Lekhnath Metropolitan City")
+props = muni['properties']
+print(f"Website: {props.get('website')}")
+print(f"Wards: {props.get('wards')}")
+```
+
+#### `get_boundaries(district_name)`
+Get only the geometry (Polygon/MultiPolygon) for mapping.
+```python
+geom = nepal_geo_data.get_boundaries("Mustang")
+# Use with Shapely or GeoPandas
+# shape = shapely.geometry.shape(geom)
+```
+
+### 3. Raw GeoJSON Data
+
+Access the raw FeatureCollections directly for use with GIS libraries like GeoPandas.
+
+#### `get_geojson()`
+All districts as a FeatureCollection.
+```python
+import geopandas as gpd
+geojson = nepal_geo_data.get_geojson()
+gdf = gpd.GeoDataFrame.from_features(geojson)
+gdf.plot()
+```
+
+#### `get_provinces_geojson()`
+All provinces as a FeatureCollection.
+
+#### `get_municipalities_geojson()`
+All municipalities as a FeatureCollection.
+
+### 4. Interactive Help
+
+#### `help()`
+Prints a quick guide to the console.
+```python
+nepal_geo_data.help()
+```
+
+## 🚀 Advanced Usage & Integrations
+
+### 1. Plotly Integration: Mapping Provinces
+Here is a complete example of how to create a Choropleth map of Nepal's 7 Provinces using `plotly.express`.
+
+```python
+import plotly.express as px
+from nepal_geo_data import get_provinces_geojson
+
+# 1. Get Province GeoJSON
+province_geojson = get_provinces_geojson()
+
+# 2. Prepare Data (Example: Population or GDP by Province)
+# Note: Keys must match the Feature properties (e.g., 'province_name_en' or 'province_code')
+data = [
+    {'Province': 'Koshi Province', 'Value': 10},
+    {'Province': 'Madhesh Province', 'Value': 20},
+    {'Province': 'Bagmati Province', 'Value': 50},
+    {'Province': 'Gandaki Province', 'Value': 30},
+    {'Province': 'Lumbini Province', 'Value': 40},
+    {'Province': 'Karnali Province', 'Value': 5},
+    {'Province': 'Sudurpaschim Province', 'Value': 15},
+]
+
+# 3. Create Map
+fig = px.choropleth_mapbox(
+    data_frame=data,
+    geojson=province_geojson,
+    locations='Province',             # Key in 'data'
+    featureidkey="properties.province_name_en", # Key in GeoJSON properties
+    color='Value',
+    center={"lat": 28.3949, "lon": 84.1240},
+    mapbox_style="carto-positron",
+    zoom=6,
+    title="Nepal Province-wise Distribution",
+    opacity=0.7
+)
+
+fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0})
+fig.show()
+```
+
+### 2. GeoPandas Integration (Static Maps)
+Easily convert data for spatial analysis.
+
+```python
+import geopandas as gpd
+from nepal_geo_data import get_municipalities_geojson
+
+# Load all 753 municipalities into a GeoDataFrame
+gdf = gpd.GeoDataFrame.from_features(get_municipalities_geojson())
+
+# Filter for a specific district
+ktm_munis = gdf[gdf['district_name_en'] == 'Kathmandu']
+
+# Plot
+ktm_munis.plot(column='type', legend=True, figsize=(10, 10))
+```
+
+### 3. Folium Integration (Interactive Web Maps)
+```python
+import folium
+from nepal_geo_data import get_boundaries
+
+# Create base map
+m = folium.Map(location=[28.3949, 84.1240], zoom_start=7)
+
+# Add District Boundary (e.g., Mustang)
+mustang_geom = get_boundaries("Mustang")
+folium.GeoJson(
+    mustang_geom,
+    style_function=lambda x: {'color': 'red', 'fillOpacity': 0.3}
+).add_to(m)
+
+m.save("nepal_map.html")
+```
 
 ## Contributing
 
