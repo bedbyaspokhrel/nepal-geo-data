@@ -163,43 +163,111 @@ def get_municipality(name: str) -> Optional[Dict[str, Any]]:
     """
     data = _get_municipalities_data()
     name_upper = name.upper()
-    for feature in data['features']:
-        if feature['properties'].get('gapa_napa', '').upper() == name_upper:
-            return feature
-        # Also check key maybe?
+    
+    # 1. Find GeoJSON feature
+    feature = None
+    for f in data['features']:
+        if f['properties'].get('gapa_napa', '').upper() == name_upper:
+            feature = f
+            break
+        # Also check key/aliases if needed
+    
+    if feature:
+        # 2. Find and merge rich metadata (wards, website, area)
+        meta = _find_municipality_meta(feature['properties']['gapa_napa']) # Use the canonical name from geojson to search meta
+        if meta is None:
+             meta = _find_municipality_meta(name) # Try original query
+
+        if meta:
+            # Merge safe keys: website, area_sq_km, wards, headquarter (if any)
+            for k in ['website', 'area_sq_km', 'wards']:
+                if k in meta:
+                    feature['properties'][k] = meta[k]
+        return feature
+        
     return None
+
+_METADATA_EN = None
+
+def _load_metadata_en() -> List[Dict[str, Any]]:
+    global _METADATA_EN
+    if _METADATA_EN is None:
+        _METADATA_EN = _load_json('meta_en.json')
+    return _METADATA_EN
+
+def _find_municipality_meta(name: str) -> Optional[Dict[str, Any]]:
+    """Helper to find municipality metadata from the tree."""
+    meta = _load_metadata_en()
+    name_upper = name.upper()
+    
+    for province in meta:
+        districts = province.get('districts', [])
+        dist_list = []
+        if isinstance(districts, dict):
+            dist_list = list(districts.values())
+        elif isinstance(districts, list):
+            dist_list = districts
+
+        for district in dist_list:
+            if isinstance(district, str):
+                continue
+            
+            # Check municipalities (which can be a list or a dict in the json)
+            munis = district.get('municipalities', [])
+            muni_list = []
+            if isinstance(munis, dict):
+                muni_list = list(munis.values())
+            elif isinstance(munis, list):
+                muni_list = munis
+            
+            for muni in muni_list:
+                if isinstance(muni, dict) and muni.get('name', '').upper() == name_upper:
+                    return muni
+    return None
+
+def get_wards(municipality_name: str) -> List[int]:
+    """
+    Returns a list of ward numbers for a specific municipality.
+    """
+    meta = _find_municipality_meta(municipality_name)
+    if meta and 'wards' in meta:
+        # Sort just in case
+        return sorted([int(w) for w in meta['wards']])
+    return []
 
 def help() -> None:
     """
     Prints a guide on how to use the nepal-geo-data package.
     """
     guide = """
-    🇳🇵 Nepal Geo Data Package Guide
-    ===============================
+    🇳🇵 Nepal Geo Data Package Guide (v0.3.0)
+    ========================================
     
     Available Functions:
     --------------------
     
     1. Administrative Lists
        - get_districts() -> List[str]
-         Returns a list of all 77 districts (e.g., ['ACHHAM', ...]).
+         Returns a list of all 77 districts.
          
        - get_municipalities(district_name=None) -> List[str]
          Returns a list of all 753 municipalities. 
-         Optional: Pass a district name to filter (e.g., get_municipalities('Jhapa')).
          
        - get_provinces() -> List[Dict]
-         Returns a list of metadata for all 7 provinces.
+         Returns specific metadata for all 7 provinces.
          
        - get_province_districts(province_id) -> List[str]
-         Returns districts in a specific province (IDs: 1-7).
+         Returns districts in a specific province.
          
-    2. Detailed Data (GeoJSON Features)
+       - get_wards(municipality_name) -> List[int]
+         Returns a list of ward numbers for a municipality. (New in v0.3.0)
+         
+    2. Detailed Data (GeoJSON + Metadata)
        - get_district(name) -> Dict
-         Get metadata and geometry for a district (e.g., get_district('Kathmandu')).
+         Get metadata (including HQ, Area, Website) and geometry.
          
        - get_municipality(name) -> Dict
-         Get metadata and geometry for a municipality (e.g., get_municipality('Kathmandu Metropolitan City')).
+         Get metadata (including Wards, Area, Website) and geometry.
          
     3. Raw GeoJSON
        - get_geojson() -> Dict (All Districts)
@@ -209,9 +277,8 @@ def help() -> None:
     Example Usage:
     --------------
     >>> import nepal_geo_data
-    >>> nepal_geo_data.get_districts()
-    >>> nepal_geo_data.get_municipalities('Kathmandu')
-    >>> nepal_geo_data.get_district('Lalitpur')
+    >>> nepal_geo_data.get_wards('Kathmandu Metropolitan City')
+    [1, 2, ..., 32]
     
     For more info, visit: https://github.com/bedbyaspokhrel/nepal-geo-data
     """

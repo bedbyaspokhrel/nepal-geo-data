@@ -150,9 +150,15 @@ Returns a list of municipality names.
 *   `district_name` (Optional): If provided, filters the list to return only municipalities within that district.
 *   **Returns**: Sorted list of strings.
 
+### `get_wards(municipality_name)`
+Returns a list of ward numbers (integers) for a specific municipality.
+*   `municipality_name`: Name of the municipality (case-insensitive).
+*   **Returns**: List of integers (e.g., `[1, 2, 3]`).
+
 ### `get_municipality(name)`
 Returns the GeoJSON feature for a specific municipality.
 *   `name`: Name of the municipality (English, case-insensitive).
+*   **Returns**: Dictionary with geometry and rich metadata (Wards, Website, Area).
 
 ### `get_geojson()` / `get_provinces_geojson()` / `get_municipalities_geojson()`
 Returns the complete raw GeoJSON FeatureCollection for Districts, Provinces, or Municipalities respectively.
